@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-application
+  namespace: my-namespace # Updated namespace
+spec:
+  project: default
+  source:
+    repoURL: <repository_URL>
+    targetRevision: HEAD
+    path: <path_to_application_manifests>
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

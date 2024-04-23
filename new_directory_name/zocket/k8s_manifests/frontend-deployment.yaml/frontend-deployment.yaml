@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: zockets
+  labels:
+    role: frontend
+    env: demo
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      role: frontend
+  template:
+    metadata:
+      labels:
+        role: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: itskumaran/frontend:v1
+          imagePullPolicy: Always
+          env:
+            - name: REACT_APP_BACKEND_URL
+              value: "http://10.100.233.110:8080/api/tasks"
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: zockets
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+  type: ClusterIP
+  selector:
+    role: frontend
